@@ -5,18 +5,18 @@ import { Div, Overlay } from "./Modal.styled";
 export const Modal = ({ onClick, image, tags }) => {
 
     useEffect(() => {
+        const handlerKeyDown = (evt) => {
+            if (evt.code === "Escape") {
+                onClick();
+            };
+        };
+
         window.addEventListener('keydown', handlerKeyDown);
 
         return () => {
             window.removeEventListener('keydown', handlerKeyDown);
         };
-    },);
-
-    const handlerKeyDown = (evt) => {
-        if (evt.code === "Escape") {
-            onClick();
-        };
-    };
+    }, [onClick]);
 
     const handlerClick = (evt) => {
         if (evt.currentTarget === evt.target) {

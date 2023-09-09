@@ -26,7 +26,6 @@ export const App = () => {
     async function getImages() {
       try {
         setLoader(true);
-
         const { hits, totalHits } = await serviceSearch(query, page);
         if (totalHits === 0) {
           toast.error('Nothing found for your request');
