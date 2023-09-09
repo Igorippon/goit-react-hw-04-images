@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { useEffect, useState } from "react";
 import toast from 'react-hot-toast';
 import { Layuot } from "./Layout";
 import { Searchbar } from "./Searchbar/Searchbar";
@@ -8,82 +8,78 @@ import { Button } from "./Button/Button.js";
 import { Loader } from "./Loader/Loader";
 import { Modal } from "./Modal/Modal";
 
+export const App = () => {
+  const [page, setPage] = useState(1);
+  const [query, setQuery] = useState('');
+  const [images, setImages] = useState([]);
+  const [image, setImage] = useState('');
+  const [total, setTotal] = useState(0);
+  const [loader, setLoader] = useState(false);
+  const [modal, setModal] = useState(false);
+  const [tags, setTags] = useState('');
+  const [randomId, setRandomId] = useState('');
 
-
-export class App extends Component {
-  state = {
-    page: 1,
-    query: '',
-    images: [],
-    image: '',
-    total: 0,
-    loader: false,
-    modal: false,
-    tags: '',
-    randomId: ''
-  };
-
-
-
-  componentDidUpdate = async (prevProps, prevState) => {
-    const { page, query, randomId, total } = this.state;
-    if (prevState.page !== page || prevState.randomId !== randomId) {
+  useEffect(() => {
+    if (query === '') {
+      return
+    }
+    async function getImages() {
       try {
-        this.setState({ loader: true });
+        setLoader(true);
+
         const { hits, totalHits } = await serviceSearch(query, page);
         if (totalHits === 0) {
           toast.error('Nothing found for your request');
           return;
         };
-        if (prevState.total !== total) {
+        if (page === 1) {
           toast.success(`Hooray! We found ${totalHits} images.`);
-        };
-        this.setState(prevState => ({
-          images: [...prevState.images, ...hits],
-          total: Math.ceil(totalHits / 12),
-        }));
+        }
+        setImages(prevImages =>
+          [...prevImages, ...hits],
+        );
+        setTotal(Math.ceil(totalHits / 12));
       } catch (error) {
         toast.error('Oops... something went wrong, please reload the page!');
       } finally {
-        this.setState({ loader: false });
+        setLoader(false);
       };
-
     };
+    getImages()
+
+  }, [page, query, randomId]);
+
+  const handlerSubmitForm = (searchValue) => {
+    setQuery(searchValue);
+    setRandomId(`${Date.now()}/${searchValue}`);
+    setPage(1);
+    setImages([]);
+    setTotal(0);
   };
 
-  handlerSubmitForm = (searchValue) => {
-    this.setState({ query: searchValue, randomId: `${Date.now()}/${searchValue}`, page: 1, images: [], total: 0 })
+  const handlerClickLoadMore = () => {
+    setPage(prevPage => (prevPage + 1));
   };
 
-  handlerClickLoadMore = () => {
-    this.setState(prevState => ({
-      page: prevState.page + 1,
-    }));
+  const handlerClickImage = (largeImageURL, tags) => {
+    toggleModal();
+    setImage(largeImageURL);
+    setTags(tags);
   };
 
-  handlerClickImage = (largeImageURL, tags) => {
-    this.toggleModal();
-    this.setState({ image: largeImageURL, tags: tags });
-  };
-
-  toggleModal = () => {
-    this.setState({
-      modal: !this.state.modal,
-    })
+  const toggleModal = () => {
+    setModal(!modal);
   }
 
-  render() {
-    const { images, image, page, total, loader, modal, tags } = this.state;
-
-    return (
-      <Layuot >
-        <Searchbar onSubmit={this.handlerSubmitForm} />
-        <ImageGallery images={images}
-          onClick={this.handlerClickImage} />
-        {loader && <Loader />}
-        {images.length > 0 && page < total && <Button onClick={this.handlerClickLoadMore} />}
-        {modal && <Modal onClick={this.toggleModal} image={image} tags={tags} />}
-      </Layuot>
-    );
-  };
+  return (
+    <Layuot >
+      <Searchbar onSubmit={handlerSubmitForm} />
+      <ImageGallery images={images}
+        onClick={handlerClickImage} />
+      {loader && <Loader />}
+      {images.length > 0 && page < total && <Button onClick={handlerClickLoadMore} />}
+      {modal && <Modal onClick={toggleModal} image={image} tags={tags} />}
+    </Layuot>
+  );
 };
+

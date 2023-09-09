@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import PropTypes from 'prop-types';
 import { Div, Overlay } from "./Modal.styled";
 
-
 export const Modal = ({ onClick, image, tags }) => {
 
     useEffect(() => {
@@ -32,7 +31,6 @@ export const Modal = ({ onClick, image, tags }) => {
             </Div>
         </Overlay>
     );
-
 }
 
 Modal.propTypes = {

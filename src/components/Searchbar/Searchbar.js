@@ -17,7 +17,6 @@ export const Searchbar = ({ onSubmit }) => {
         evt.target.reset();
     };
 
-
     return (
         <Header>
             <Form onSubmit={handlerSubmit}>
@@ -35,8 +34,6 @@ export const Searchbar = ({ onSubmit }) => {
         </Header>
     );
 };
-
-
 
 Searchbar.propTypes = {
     onSubmit: PropTypes.func.isRequired,
