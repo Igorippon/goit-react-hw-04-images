@@ -12,9 +12,11 @@ export const Modal = ({ onClick, image, tags }) => {
         };
 
         window.addEventListener('keydown', handlerKeyDown);
+        document.body.style.overflow = 'hidden';
 
         return () => {
             window.removeEventListener('keydown', handlerKeyDown);
+            document.body.style.overflow = 'unset';
         };
     }, [onClick]);
 
