@@ -19,10 +19,13 @@ export const App = () => {
   const [tags, setTags] = useState('');
   const [randomId, setRandomId] = useState('');
 
+
+
   useEffect(() => {
     if (query === '') {
       return
-    }
+    };
+
     async function getImages() {
       try {
         setLoader(true);
@@ -44,7 +47,7 @@ export const App = () => {
         setLoader(false);
       };
     };
-    getImages()
+    getImages();
 
   }, [page, query, randomId]);
 
